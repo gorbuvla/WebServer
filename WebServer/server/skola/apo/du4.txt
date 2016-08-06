@@ -1,0 +1,99 @@
+00404c90 <subroutine_fnc>:
+404c90: 3c1c0005 lui gp,0x5                            //R_MIPS_HI16 _gp_disp 
+404c94: 279c95e0 addiu gp,gp,-27168                    //R_MIPS_LO16 _gp_disp
+404c98: 0399e021 addu gp,gp,t9                         //compute offset to the global data from
+                                                       // known address of actual function which
+                                                       // is assigned to t9 during call
+404c9c: 27bdffe0 addiu sp,sp,-32                       //stack space for local variables
+404ca0: afb3001c sw s3,28(sp)          
+404ca4: afb20018 sw s2,24(sp)
+404ca8: afb10014 sw s1,20(sp)
+404cac: afb00010 sw s0,16(sp)
+404cb0: 00809021 move s2,a0                             //s2 is 1. parameter
+404cb4: 00a09821 move s3,a1                             //s3 is 2. parameter
+404cb8: 00008021 move s0,zero                           //s0 = 0
+
+
+404cbc: 1000000a b 404ce8 <__start_my_text+0x58>        //unconditional branch to 404ce8   BRANCH_1_FROM
+
+
+
+404cc0: 24110001 li s1,1                                //load immediate? s1 = 1               
+404cc4: 27a50008 addiu a1,sp,8                          //a1 = sp + 8        BRANCH_5_TO
+404cc8: 24060001 li a2,1                                //load immediate a2 = 1
+404ccc: 24020fa4 li v0,4004                             //load immediate syscall code SYS_write  write()
+404cd0: 0000000c syscall                                // call syscall
+404cd4: 10e00002 beqz a3,404ce0 <__start_my_text+0x50>  //branch if equal to zero syscall was succesfull BRANCH_2_FROM
+
+404cd8: 00000000 nop                                    // empty delay slot
+404cdc: 2402ffff li v0,-1                               // no jump, set v0 = -1
+404ce0: 0440000d bltz v0,404d18 <__start_my_text+0x88>  // branch on less than zero v0 < 0  BRANCH_3_FROM BRANCH_2_TO
+404ce4: 26100001 addiu s0,s0,1                          // add immediate unsigned s0+=1
+404ce8: 02402021 move a0,s2                             // 1. parameter              BRANCH_1_TO
+404cec: 27a50008 addiu a1,sp,8                          // 2nd parameter = sp + 8??
+404cf0: 24060001 li a2,1                                // load immediate a2 = 1
+404cf4: 24020fa3 li v0,4003                             // load sys call 4003 SYS_read   read(1.func_param, sp+8, 1)
+404cf8: 0000000c syscall                                // issue syscall
+404cfc: 10e00002 beqz a3,404d08 <__start_my_text+0x78>  // if a3 == 0 go to 404d08 BRANCH_4_FROM on syscall success
+404d00: 00000000 nop                                    // empty delay slot
+404d04: 2402ffff li v0,-1                               // no jump, v0 = -1 
+404d08: 1051ffee beq v0,s1,404cc4 <__start_my_text+0x34>     // if v0 == s1 goto 404cc4 BRANCH_5_FROM  BRANCH_4_TO
+404d0c: 02602021 move a0,s3                             //s3 is 1st parameter
+404d10: 04410002 bgez v0,404d1c <__start_my_text+0x8c>  // if v >= 0 goto 404d1c    BRANCH_6_FROM
+404d14: 02001821 move v1,s0                             // v1 = s0
+404d18: 2403ffff li v1,-1                               // v1 = -1    BRANCH_3_TO
+
+
+404d1c: 00601021 move v0,v1                             // v0 = v1 return v0        BRANCH_6_TO
+404d20: 8fb3001c lw s3,28(sp)                           // restore regs
+404d24: 8fb20018 lw s2,24(sp)
+404d28: 8fb10014 lw s1,20(sp)
+404d2c: 8fb00010 lw s0,16(sp)
+404d30: 03e00008 jr ra                                  // return from the function
+404d34: 27bd0020 addiu sp,sp,32                         // stack is restored back to the value at function
+                                                     // entry in the return delay slot
+
+
+
+
+
+00404d38 <toplevel_fnc>:
+404d38: 3c1c0005 lui gp,0x5                          //R_MIPS_HI16 _gp_disp
+404d3c: 279c9538 addiu gp,gp,-27336                  //R_MIPS_LO16 _gp_disp
+404d40: 0399e021 addu gp,gp,t9                       // compute offset to thye global data from
+                                                       // start address of the actual function found in t9
+404d44: 27bdffe0 addiu sp,sp,-32                     // stack space for local vars
+404d48: afbf001c sw ra,28(sp)                        
+404d4c: afb00018 sw s0,24(sp)
+404d50: afbc0010 sw gp,16(sp)
+404d54: 8f8481d0 lw a0,-32304(gp)                    //find file path 
+404d58: 00002821 move a1,zero                        //a1 = 0
+404d5c: 24060180 li a2,384                           //a2 = 384
+404d60: 24020fa5 li v0,4005                          // open(a0, 0, 384)
+404d64: 0000000c syscall
+404d68: 10e00003 beqz a3,404d78 <toplevel_fnc+0x40>    //a3 == 0 goto  BRANCH_1_FROM
+404d6c: 00408021 move s0,v0                             
+404d70: 2402ffff li v0,-1
+404d74: 00408021 move s0,v0
+404d78: 0600000d bltz s0,404db0 <toplevel_fnc+0x78>    //s0 < 0        BRANCH_2_FROM    BRANCH_1_TO
+404d7c: 2402ffff li v0,-1
+404d80: 02002021 move a0,s0
+404d84: 24050001 li a1,1
+404d88: 8f99809c lw t9,-32612(gp)
+404d8c: 00000000 nop
+404d90: 0320f809 jalr t9                               //call function with params a0 = ? a1 = 1
+404d94: 00000000 nop
+404d98: 8fbc0010 lw gp,16(sp)
+404d9c: 00402821 move a1,v0
+404da0: 02002021 move a0,s0
+404da4: 24020fa6 li v0,4006                           //close
+404da8: 0000000c syscall
+404dac: 00a01021 move v0,a1n
+404db0: 8fbf001c lw ra,28(sp)                         //BRANCH_2_TO
+404db4: 8fb00018 lw s0,24(sp)
+404db8: 03e00008 jr ra
+404dbc: 27bd0020 addiu sp,sp,32
+
+
+program data
+build/program-mips: file format elf32-tradlittlemips
